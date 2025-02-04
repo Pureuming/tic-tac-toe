@@ -10,7 +10,7 @@ public class Block : MonoBehaviour
     public enum MarkerType { None, O, X }
 
     public delegate void OnBlockClicked(int index); // void를 반환하고 int를 매개변수로 삼는 형태의 함수를 받는다.
-    public event OnBlockClicked onBlockClicked;
+    public OnBlockClicked onBlockClicked;
     
     private int _blockIndex;
 
@@ -23,7 +23,7 @@ public class Block : MonoBehaviour
     {
         _blockIndex = blockIndex;
         SetMarker(MarkerType.None);
-        this.onBlockClicked += onBlockClicked;
+        this.onBlockClicked = onBlockClicked;
     }
 
     /// <summary>

@@ -3,6 +3,23 @@
 public class BlockController : MonoBehaviour
 {
     [SerializeField] private Block[] blocks;
+    
+    public delegate void OnBlockClicked(int row, int col);
+    public OnBlockClicked OnBlockClickedDelegate;
+
+    public void InitBlocks()
+    {
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            blocks[i].InitMarker(i, blockIndex =>
+            {
+                var clickedRow = blockIndex / 3;
+                var clickedCol = blockIndex % 3;
+                
+                OnBlockClickedDelegate?.Invoke(clickedRow, clickedCol);
+            });
+        }
+    }
 
     /// <summary>
     /// 특정 Block에 Marker를 표시하는 함수
