@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private BlockController blockController;
+    [SerializeField] private GameObject startPanel;     // TODO: 임시 변수, 나중에 삭제 예정
 
     private enum PlayerType { None, PlayerA, PlayerB }
     private PlayerType[,] _board;
@@ -38,12 +39,28 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void StartGame()
     {
+        startPanel.SetActive(false);    // TODO: 테스트 코드, 나중에 삭제 예정
+        
         SetTurn(TurnType.PlayerA);
     }
     
-    private void EndGame()
+    /// <summary>
+    /// 게임 오버 시, 호출되는 함수
+    /// gameResult에 따라 결과 출력
+    /// </summary>
+    /// <param name="gameResult">win, lose, draw</param>
+    private void EndGame(GameResult gameResult)
     {
-        
+        // TODO: 나중에 구현!
+        switch (gameResult)
+        {
+            case GameResult.Win:
+                break;
+            case GameResult.Lose:
+                break;
+            case GameResult.Draw:
+                break;
+        }
     }
 
     /// <summary>
@@ -68,12 +85,6 @@ public class GameManager : Singleton<GameManager>
             return true;
         }
         return false;
-        
-        //if (_board[row, col] != PlayerType.None) return false;
-        //
-        //_board[row, col] = playerType;
-        //blockController.PlaceMarker(playerType == PlayerType.PlayerA ? Block.MarkerType.O : Block.MarkerType.X, row, col);
-        //return true;
     }
 
     private void SetTurn(TurnType turnType)
@@ -81,35 +92,28 @@ public class GameManager : Singleton<GameManager>
         switch (turnType)
         {
             case TurnType.PlayerA:
-                //TODO: 플레이어에게 입력 받기
+                Debug.Log("Player A turn");
                 blockController.OnBlockClickedDelegate = (row, col) =>
                 {
-                    // TODO: 1. _board에 내용 반영
-                    // TODO: 2. 화면에 Marker 표시
+                    if (SetNewBoardValue(PlayerType.PlayerA, row, col))
+                    {
+                        var gameResult = CheckGameResult();
+                        if (gameResult == GameResult.None)
+                            SetTurn(TurnType.PlayerB);
+                        else
+                            EndGame(gameResult);
+                    }
+                    else
+                    {
+                        // TODO: 이미 있는 곳을 터치 했을 때 처리
+                    }
                 };
                 break;
             case TurnType.PlayerB:
+                Debug.Log("Player B turn");
+                blockController.OnBlockClickedDelegate = null;
                 //TODO: AI에게 입력 받기
                 
-                break;
-        }
-        
-        // 게임 결과 확인
-        switch (CheckGameResult())
-        {
-            case GameResult.Win:
-                // TODO: 승리 결과창 표시
-                break;
-            case GameResult.Lose:
-                // TODO: 패배 결과창 표시
-                break;
-            case GameResult.Draw:
-                // TODO: 비김 결과창 표시
-                break;
-            case GameResult.None:
-                // 게임이 종료되지 않았다면, 턴 변경
-                var nextTurn = turnType == TurnType.PlayerA ? TurnType.PlayerB : TurnType.PlayerA;
-                SetTurn(nextTurn);
                 break;
         }
     }
