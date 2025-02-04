@@ -46,13 +46,47 @@ public class GameManager : Singleton<GameManager>
         
     }
 
+    /// <summary>
+    /// _board에 새로운 값을 할당하는 함수
+    /// </summary>
+    /// <param name="playerType">할당하고자 하는 플레이어 타입</param>
+    /// <param name="row">Row</param>
+    /// <param name="col">Col</param>
+    /// <returns>False : 할당할 수 없음, True : 할당이 완료됨</returns>
+    private bool SetNewBoardValue(PlayerType playerType, int row, int col)
+    {
+        if (playerType == PlayerType.PlayerA)
+        {
+            _board[row, col] = playerType;
+            blockController.PlaceMarker(Block.MarkerType.O, row, col);
+            return true;
+        }
+        else if (playerType == PlayerType.PlayerB)
+        {
+            _board[row, col] = playerType;
+            blockController.PlaceMarker(Block.MarkerType.X, row, col);
+            return true;
+        }
+        return false;
+        
+        //if (_board[row, col] != PlayerType.None) return false;
+        //
+        //_board[row, col] = playerType;
+        //blockController.PlaceMarker(playerType == PlayerType.PlayerA ? Block.MarkerType.O : Block.MarkerType.X, row, col);
+        //return true;
+    }
+
     private void SetTurn(TurnType turnType)
     {
         switch (turnType)
         {
             case TurnType.PlayerA:
                 //TODO: 플레이어에게 입력 받기
-                
+                blockController.OnBlockClickedDelegate = (row, col) =>
+                {
+                    // TODO: 1. _board에 내용 반영
+                    // TODO: 2. 화면에 Marker 표시
+                };
                 break;
             case TurnType.PlayerB:
                 //TODO: AI에게 입력 받기
