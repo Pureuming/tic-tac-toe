@@ -1,15 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ConfirmPanelController : PanelController
 {
+    [SerializeField] private TMP_Text messageText;
+
+    public delegate void OnConfirmButtonClick();
+    private OnConfirmButtonClick onConfirmButtonClick;
+
+    public void Show(string message, OnConfirmButtonClick onConfirmButtonClick, OnHide onHide)
+    {
+        messageText.text = message;
+        this.onConfirmButtonClick = onConfirmButtonClick;
+        base.Show(onHide);
+    }
+
     /// <summary>
     /// Confirm 버튼 클릭 시 호출되는 함수
     /// </summary>
     public void OnClickConfirmButton()
     {
-        GameManager.Instance.InitGame();
+        onConfirmButtonClick?.Invoke();
         Hide();
     }
     
