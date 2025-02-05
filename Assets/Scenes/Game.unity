@@ -540,7 +540,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff46121da1bce34fbda12948baefae3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPanelController: {fileID: 0}
   confirmPanelController: {fileID: 1115473609}
   settingsPanelController: {fileID: 2082313760}
 --- !u!1001 &451018548
@@ -1783,6 +1782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e871e28cad16c44a21e83590aaceac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  messageText: {fileID: 0}
 --- !u!1 &1212841288
 GameObject:
   m_ObjectHideFlags: 0
