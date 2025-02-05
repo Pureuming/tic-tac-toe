@@ -32,11 +32,11 @@ public class GameManager : Singleton<GameManager>
         // Block 초기화
         blockController.InitBlocks();
         
-        // StartPanel 표시
-        panelManager.ShowPanel(PanelManager.PanelType.StartPanel);
-        
         // Game UI 초기화
         gameUIController.SetGameUIMode(GameUIController.GameUIMode.Init);
+        
+        // 게임 스타트
+        StartGame();
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void StartGame()
     {
-        panelManager.ShowPanel(PanelManager.PanelType.BattlePanel);
+        //panelManager.ShowPanel(PanelManager.PanelType.BattlePanel);
         SetTurn(TurnType.PlayerA);
     }
     
