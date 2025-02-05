@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private BlockController blockController;
-    [SerializeField] private GameObject startPanel;     // TODO: 임시 변수, 나중에 삭제 예정
+    [SerializeField] private PanelManager panelManager;
 
     private enum PlayerType { None, PlayerA, PlayerB }
     private PlayerType[,] _board;
@@ -18,8 +18,6 @@ public class GameManager : Singleton<GameManager>
     {
         // 게임 초기화
         InitGame();
-        
-        
     }
 
     /// <summary>
@@ -32,6 +30,9 @@ public class GameManager : Singleton<GameManager>
         
         // Block 초기화
         blockController.InitBlocks();
+        
+        // StartPanel 표시
+        panelManager.ShowPanel(PanelManager.PanelType.StartPanel);
     }
 
     /// <summary>
@@ -39,8 +40,6 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void StartGame()
     {
-        startPanel.SetActive(false);    // TODO: 테스트 코드, 나중에 삭제 예정
-        
         SetTurn(TurnType.PlayerA);
     }
     

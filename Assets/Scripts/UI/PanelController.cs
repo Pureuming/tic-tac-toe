@@ -11,7 +11,7 @@ public class PanelController : MonoBehaviour
     private RectTransform _rectTransform;
     private Vector2 _hideAnchorPosition;
 
-    private void Start()
+    private void Awake() // GameManager에서 Start에 InitGame()을 해주기 때문에 그 전에 Awake에서 세팅 
     {
         _rectTransform = GetComponent<RectTransform>();
         _hideAnchorPosition = _rectTransform.anchoredPosition; // 숨겨둔 StartPanel의 Anchor 위치 저장
