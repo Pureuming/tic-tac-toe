@@ -7,11 +7,12 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private BlockController blockController;
     [SerializeField] private PanelManager panelManager;
+    [SerializeField] private GameUIController gameUIController;
 
     public enum PlayerType { None, PlayerA, PlayerB }
     private PlayerType[,] _board;
     
-    private enum TurnType { PlayerA, PlayerB }
+    public enum TurnType { PlayerA, PlayerB }
     private enum GameResult { None, Win, Lose, Draw }
 
     private void Start()
@@ -33,6 +34,9 @@ public class GameManager : Singleton<GameManager>
         
         // StartPanel 표시
         panelManager.ShowPanel(PanelManager.PanelType.StartPanel);
+        
+        // Game UI 초기화
+        gameUIController.SetGameUIMode(GameUIController.GameUIMode.Init);
     }
 
     /// <summary>
@@ -40,6 +44,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void StartGame()
     {
+        panelManager.ShowPanel(PanelManager.PanelType.BattlePanel);
         SetTurn(TurnType.PlayerA);
     }
     
@@ -50,6 +55,9 @@ public class GameManager : Singleton<GameManager>
     /// <param name="gameResult">win, lose, draw</param>
     private void EndGame(GameResult gameResult)
     {
+        // 게임오버 표시
+        gameUIController.SetGameUIMode(GameUIController.GameUIMode.GameOver);
+        
         // TODO: 나중에 구현!
         switch (gameResult)
         {
@@ -91,7 +99,7 @@ public class GameManager : Singleton<GameManager>
         switch (turnType)
         {
             case TurnType.PlayerA:
-                Debug.Log("Player A turn");
+                gameUIController.SetGameUIMode(GameUIController.GameUIMode.TurnA);
                 blockController.OnBlockClickedDelegate = (row, col) =>
                 {
                     if (SetNewBoardValue(PlayerType.PlayerA, row, col))
@@ -109,7 +117,7 @@ public class GameManager : Singleton<GameManager>
                 };
                 break;
             case TurnType.PlayerB:
-                Debug.Log("Player B turn");
+                gameUIController.SetGameUIMode(GameUIController.GameUIMode.TurnB);
                 blockController.OnBlockClickedDelegate = (row, col) =>
                 {
                     if (SetNewBoardValue(PlayerType.PlayerB, row, col))

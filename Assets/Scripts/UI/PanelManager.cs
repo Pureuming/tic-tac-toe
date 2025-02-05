@@ -7,8 +7,9 @@ public class PanelManager : MonoBehaviour
     [SerializeField] private PanelController startPanelController;
     [SerializeField] private PanelController confirmPanelController;
     [SerializeField] private PanelController settingsPanelController;
+    //[SerializeField] private PanelController battlePanelController;
     
-    public enum PanelType { StartPanel, ConfirmPanel, SettingsPanel }
+    public enum PanelType { StartPanel, ConfirmPanel, SettingsPanel, BattlePanel }
 
     private PanelController _currentPanelController;
 
@@ -29,6 +30,9 @@ public class PanelManager : MonoBehaviour
             case PanelType.SettingsPanel:
                 ShowPanelController(settingsPanelController);
                 break;
+            //case PanelType.BattlePanel:
+            //    ShowPanelController(battlePanelController);
+            //    break;
         }
     }
 
