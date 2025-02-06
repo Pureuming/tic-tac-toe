@@ -6,8 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject confirmPanel;
+    
     private BlockController _blockController;
     private GameUIController _gameUIController;
+    private Canvas _canvas;
 
     public enum PlayerType { None, PlayerA, PlayerB }
     private PlayerType[,] _board;
@@ -20,6 +24,20 @@ public class GameManager : Singleton<GameManager>
     public void ChangeToGameScene(GameType gameType)
     {
         SceneManager.LoadScene("Game");
+    }
+
+    public void ChangeToMainScene()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
+    public void OpenSettingsPanel()
+    {
+        if (_canvas != null)
+        {
+            var settingsPanelObject = Instantiate(settingsPanel, _canvas.transform);
+            settingsPanelObject.GetComponent<PanelController>().Show();
+        }
     }
 
     /// <summary>
@@ -213,5 +231,8 @@ public class GameManager : Singleton<GameManager>
             // 게임 시작 --> GameScene에 들어왔을 때만 실행
             StartGame();
         }
+
+        // Canvas는 Main과 Game 모두 필요하기 때문에 if 밖에서 찾음
+        _canvas = GameObject.FindObjectOfType<Canvas>();
     }
 }

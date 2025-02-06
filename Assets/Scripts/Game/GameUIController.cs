@@ -52,6 +52,6 @@ public class GameUIController : MonoBehaviour
 
     public void OnClickGameOverButton()
     {
-        // TODO: 게임오버 버튼을 눌렀을 때 구현
+        GameManager.Instance.ChangeToMainScene();
     }
 }

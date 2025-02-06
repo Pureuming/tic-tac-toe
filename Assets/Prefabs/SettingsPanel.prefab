@@ -291,7 +291,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5610742926777839199}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7745310634845681771}
+        m_TargetAssemblyTypeName: SettingsPanelController, Assembly-CSharp
+        m_MethodName: OnClickCloseButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2022736844569553127
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,6 +545,7 @@ GameObject:
   - component: {fileID: 8653505211780893310}
   - component: {fileID: 1945774013365990757}
   - component: {fileID: 3197727224733632255}
+  - component: {fileID: 3589224234940521173}
   - component: {fileID: 7745310634845681771}
   m_Layer: 5
   m_Name: SettingsPanel
@@ -599,6 +612,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &3589224234940521173
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4612036900082850026}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &7745310634845681771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -611,6 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52060d5be34bdd04f96ae5bd653fd3b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 8809053544824160197}
 --- !u!1 &4728684631833358508
 GameObject:
   m_ObjectHideFlags: 0
