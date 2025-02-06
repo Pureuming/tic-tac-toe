@@ -4,7 +4,8 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening; // DOTween을 사용하기 위해 선언
+using DG.Tweening;
+using UnityEngine.SceneManagement; // DOTween을 사용하기 위해 선언
 
 [RequireComponent(typeof(CanvasGroup))]
 public class PopupPanelController : Singleton<PopupPanelController>
@@ -76,5 +77,10 @@ public class PopupPanelController : Singleton<PopupPanelController>
 
             gameObject.SetActive(false);
         }
+    }
+
+    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        
     }
 }

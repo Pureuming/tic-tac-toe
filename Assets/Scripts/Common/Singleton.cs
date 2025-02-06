@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class Singleton<T> : MonoBehaviour where T : Component
+public abstract class Singleton<T> : MonoBehaviour where T : Component
 {
     private static T _instance;
 
@@ -37,5 +38,10 @@ public class Singleton<T> : MonoBehaviour where T : Component
         {
             Destroy(gameObject);
         }
+        
+        // Scene 전환 시, 호출되는 Action Method 할당
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    protected abstract void OnSceneLoaded(Scene scene, LoadSceneMode mode);
 }

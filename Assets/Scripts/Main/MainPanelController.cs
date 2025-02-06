@@ -7,12 +7,12 @@ public class MainPanelController : MonoBehaviour
 {
     public void OnClickSinglePlayButton()
     {
-        SceneManager.LoadScene("Game");
+        GameManager.Instance.ChangeToGameScene(GameManager.GameType.SinglePlayer);
     }
     
     public void OnClickDualPlayButton()
     {
-        SceneManager.LoadScene("Game");
+        GameManager.Instance.ChangeToGameScene(GameManager.GameType.DualPlayer);
     }
     
     public void OnClickSettingsButton()

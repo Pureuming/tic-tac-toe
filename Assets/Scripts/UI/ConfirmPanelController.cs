@@ -11,11 +11,11 @@ public class ConfirmPanelController : PanelController
     public delegate void OnConfirmButtonClick();
     private OnConfirmButtonClick onConfirmButtonClick;
 
-    public void Show(string message, OnConfirmButtonClick onConfirmButtonClick, OnHide onHide)
+    // Confirm Button에 띄울 message도 받아서 사용하기 위해 함수 오버로딩을 활용
+    public void Show(string message, OnConfirmButtonClick onConfirmButtonClick)
     {
         messageText.text = message;
         this.onConfirmButtonClick = onConfirmButtonClick;
-        base.Show(onHide);
     }
 
     /// <summary>
