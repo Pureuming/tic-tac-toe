@@ -100,7 +100,7 @@ public class GameManager : Singleton<GameManager>
     /// <param name="row">Row</param>
     /// <param name="col">Col</param>
     /// <returns>False : 할당할 수 없음, True : 할당이 완료됨</returns>
-    public bool SetNewBoardValue(PlayerType playerType, int row, int col)
+    private bool SetNewBoardValue(PlayerType playerType, int row, int col)
     {
         if (_board[row, col] != PlayerType.None) return false; // 중복 체크 방지
         
