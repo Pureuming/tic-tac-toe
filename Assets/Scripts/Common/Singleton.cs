@@ -22,7 +22,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
                     _instance = obj.AddComponent<T>();
                 }
             }
-
             return _instance;
         }
     }
@@ -33,14 +32,22 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
         {
             _instance = this as T;
             DontDestroyOnLoad(gameObject);
+            // 경우에 따라 첫 Scene의 OnSceneLoaded가 호출이 안 되는 경우를 해결
+            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+            
+            // Scene 전환 시, 호출되는 Action Method 할당
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
             Destroy(gameObject);
         }
-        
-        // Scene 전환 시, 호출되는 Action Method 할당
-        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    // Destroy 후에는 OnSceneLoaded가 할당하지 않도록
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     protected abstract void OnSceneLoaded(Scene scene, LoadSceneMode mode);
