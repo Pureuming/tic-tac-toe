@@ -9,13 +9,13 @@ public class ConfirmPanelController : PanelController
     [SerializeField] private TMP_Text messageText;
 
     public delegate void OnConfirmButtonClick();
-    private OnConfirmButtonClick onConfirmButtonClick;
+    private OnConfirmButtonClick _onConfirmButtonClick;
 
     // Confirm Button에 띄울 message도 받아서 사용하기 위해 함수 오버로딩을 활용
     public void Show(string message, OnConfirmButtonClick onConfirmButtonClick)
     {
         messageText.text = message;
-        this.onConfirmButtonClick = onConfirmButtonClick;
+        _onConfirmButtonClick = onConfirmButtonClick;
         base.Show(); // Show Animation 재생
     }
 
@@ -24,8 +24,7 @@ public class ConfirmPanelController : PanelController
     /// </summary>
     public void OnClickConfirmButton()
     {
-        onConfirmButtonClick?.Invoke();
-        Hide();
+        Hide(() => _onConfirmButtonClick?.Invoke());
     }
     
     /// <summary>

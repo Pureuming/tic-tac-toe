@@ -79,6 +79,7 @@ public class GameManager : Singleton<GameManager>
     {
         // 게임오버 표시
         _gameUIController.SetGameUIMode(GameUIController.GameUIMode.GameOver);
+        _blockController.OnBlockClickedDelegate = null; // 게임이 끝났을 때 board를 Click해도 바뀌지 않도록
         
         // TODO: 나중에 구현!
         switch (gameResult)
@@ -101,6 +102,8 @@ public class GameManager : Singleton<GameManager>
     /// <returns>False : 할당할 수 없음, True : 할당이 완료됨</returns>
     private bool SetNewBoardValue(PlayerType playerType, int row, int col)
     {
+        if (_board[row, col] != PlayerType.None) return false; // 중복 체크 방지
+        
         if (playerType == PlayerType.PlayerA)
         {
             _board[row, col] = playerType;
@@ -132,10 +135,6 @@ public class GameManager : Singleton<GameManager>
                         else
                             EndGame(gameResult);
                     }
-                    else
-                    {
-                        // TODO: 이미 있는 곳을 터치 했을 때 처리
-                    }
                 };
                 break;
             case TurnType.PlayerB:
@@ -149,10 +148,6 @@ public class GameManager : Singleton<GameManager>
                             SetTurn(TurnType.PlayerA);
                         else
                             EndGame(gameResult);
-                    }
-                    else
-                    {
-                        // TODO: 이미 있는 곳을 터치 했을 때 처리
                     }
                 };
                 //TODO: AI에게 입력 받기
