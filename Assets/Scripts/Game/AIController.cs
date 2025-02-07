@@ -1,18 +1,19 @@
 ﻿public static class AIController
 {
-    private static GameManager.PlayerType[,] _board;
-    
     public static (int row, int col)? FindNextMove(GameManager.PlayerType[,] board)
     {
-        var result1 = FindTwoMarker(board);
+        // 가로, 세로, 대각선 비교
+        var result1 = FindTwoMarker(board, GameManager.PlayerType.PlayerB);
         // HasValue : 값이 있는지 체크
         if (result1.HasValue) return result1.Value;
-        var result2 = FindEmptyPosition(board, GameManager.PlayerType.PlayerA);
+        var result2 = FindTwoMarker(board, GameManager.PlayerType.PlayerA);
         if (result2.HasValue) return result2.Value;
-        var result3 = FindEmptyPosition(board, GameManager.PlayerType.PlayerB);
+        var result3 = FindEmptyPosition(board, GameManager.PlayerType.PlayerA);
         if (result3.HasValue) return result3.Value;
-        var result4 = FindEmptyPosition(board, GameManager.PlayerType.None);
+        var result4 = FindEmptyPosition(board, GameManager.PlayerType.PlayerB);
         if (result4.HasValue) return result4.Value;
+        var result5 = FindEmptyPosition(board, GameManager.PlayerType.None);
+        if (result5.HasValue) return result5.Value;
         return null;
     }
 
@@ -41,12 +42,113 @@
                 }
             }
         }
-
         return null;
     }
-
+    
     // (int row, int col)'?' --> Nullable : null을 할당 할 수 없는 타입도 null로 할당 할 수 있도록, 사용법 : 변수 타입 뒤에 '?' 붙이기
-    private static (int row, int col)? FindTwoMarker(GameManager.PlayerType[,] board)
+    private static (int row, int col)? FindTwoMarker(GameManager.PlayerType[,] board, GameManager.PlayerType playerType)
+    {
+        // 가로로 플레이어 마커가 두 개 이상인지 확인
+        for (var row = 0; row < board.GetLength(0); row++)
+        {
+            if (board[row, 0] == playerType &&
+                board[row, 1] == playerType &&
+                board[row, 2] == GameManager.PlayerType.None)
+            {
+                return (row, 2);
+            }
+            
+            if (board[row, 1] == playerType &&
+                board[row, 2] == playerType &&
+                board[row, 0] == GameManager.PlayerType.None)
+            {
+                return (row, 0);
+            }
+
+            if (board[row, 0] == playerType &&
+                board[row, 2] == playerType &&
+                board[row, 1] == GameManager.PlayerType.None)
+            {
+                return (row, 1);
+            }
+        }
+        
+        // 세로로 플레이어 마커가 두 개 이상인지 확인
+        for (var col = 0; col < board.GetLength(1); col++)
+        {
+            if (board[0, col] == playerType &&
+                board[1, col] == playerType &&
+                board[2, col] == GameManager.PlayerType.None)
+            {
+                return (2, col);
+            }
+            
+            if (board[1, col] == playerType &&
+                board[2, col] == playerType &&
+                board[0, col] == GameManager.PlayerType.None)
+            {
+                return (0, col);
+            }
+            
+            if (board[0, col] == playerType &&
+                board[2, col] == playerType &&
+                board[1, col] == GameManager.PlayerType.None)
+            {
+                return (1, col);
+            }
+        }
+        
+        // 대각선에 대한 체크
+        if (board[0, 0] == playerType &&
+            board[1, 1] == playerType &&
+            board[2, 2] == GameManager.PlayerType.None)
+        {
+            return (2, 2);
+        }
+
+        if (board[1, 1] == playerType &&
+            board[2, 2] == playerType &&
+            board[0, 0] == GameManager.PlayerType.None)
+        {
+            return (0, 0);
+        }
+
+        if (board[0, 0] == playerType &&
+            board[2, 2] == playerType &&
+            board[1, 1] == GameManager.PlayerType.None)
+        {
+            return (1, 1);
+        }
+        
+        if (board[0, 2] == playerType &&
+            board[1, 1] == playerType &&
+            board[2, 0] == GameManager.PlayerType.None)
+        {
+            return (2, 0);
+        }
+        
+        if (board[1, 1] == playerType &&
+            board[2, 0] == playerType &&
+            board[0, 2] == GameManager.PlayerType.None)
+        {
+            return (0, 2);
+        }
+        
+        if (board[0, 2] == playerType &&
+            board[2, 0] == playerType &&
+            board[1, 1] == GameManager.PlayerType.None)
+        {
+            return (1, 1);
+        }
+        
+        return null;
+        
+        return null; // 이것을 위해 Nullable 사용
+    }
+
+    #region MyAlgorithm
+    
+    private static (int row, int col)? MyFindTwoMarker(GameManager.PlayerType[,] board)
     {
         // 1. 중앙이 비었으면 무조건 중앙을 체크
         if (board[1, 1] == GameManager.PlayerType.None) { return (1, 1); }
@@ -125,4 +227,6 @@
         
         return null; // 이것을 위해 Nullable 사용
     }
+
+    #endregion
 }
