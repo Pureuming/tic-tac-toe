@@ -140,9 +140,8 @@ public class GameManager : Singleton<GameManager>
             case TurnType.PlayerB:
                 _gameUIController.SetGameUIMode(GameUIController.GameUIMode.TurnB);
                 
-                // TODO: 계산된 row, col 값
-
-                var result = AIController.FindNextMove(_board);
+                //var result = AIController.FindNextMove(_board);
+                var result = MinimaxAIController.GetBestMove(_board);
                 if (result.HasValue)
                 {
                     if (SetNewBoardValue(PlayerType.PlayerB, result.Value.row, result.Value.col))
