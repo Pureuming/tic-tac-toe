@@ -141,8 +141,6 @@
             return (1, 1);
         }
         
-        return null;
-        
         return null; // 이것을 위해 Nullable 사용
     }
 

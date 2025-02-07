@@ -1,11 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class MinimaxAIController
 {
+    public static void printBoard(GameManager.PlayerType[,] board)
+    {
+        string boardString = "";
+        for (int row = 0; row < 3; row++)
+        {
+            for (int col = 0; col < 3; col++)
+            {
+                boardString += $"{(int)board[row, col]} ";  // PlayerType 값을 숫자로 출력
+            }
+            boardString += "\n";  // 한 줄 출력 후 줄 바꿈
+        }
+        Debug.Log("\n" + boardString);  // 콘솔 창에 보드 출력
+    }
+    
     public static (int row, int col)? GetBestMove(GameManager.PlayerType[,] board)
     {
+        float bestScore = -1000;
+        (int row, int col)? bestMove = null;
+        
         for (var row = 0; row < board.GetLength(0); row++)
         {
             for (var col = 0; col < board.GetLength(1); col++)
@@ -15,14 +33,19 @@ public static class MinimaxAIController
                     board[row, col] = GameManager.PlayerType.PlayerB;
                     var score = DoMinimax(board, 0, false);
                     board[row, col] = GameManager.PlayerType.None;
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestMove = (row, col);
+                    }
                 }
             }
         }
-
-        return null;
+        return bestMove;
     }
     
-    private static float DoMinimax(GameManager.PlayerType[,] board, int depth, bool isAITurn)
+    private static float DoMinimax(GameManager.PlayerType[,] board, int depth, bool isMaximizing)
     {
         if (CheckGameWin(GameManager.PlayerType.PlayerA, board))
             return -10 + depth;
@@ -31,8 +54,9 @@ public static class MinimaxAIController
         if (IsAllBlocksPlaced(board))
             return 0;
 
-        if (isAITurn)
+        if (isMaximizing)
         {
+            var bestScore = float.MinValue;
             for (var row = 0; row < board.GetLength(0); row++)
             {
                 for (var col = 0; col < board.GetLength(1); col++)
@@ -40,14 +64,17 @@ public static class MinimaxAIController
                     if (board[row, col] == GameManager.PlayerType.None)
                     {
                         board[row, col] = GameManager.PlayerType.PlayerB;
-                        DoMinimax(board, depth + 1, false); // 재귀함수
+                        var score = DoMinimax(board, depth + 1, false); // 재귀함수
                         board[row, col] = GameManager.PlayerType.None;
+                        bestScore = Math.Max(bestScore, score); // Math.Max(a, b) : a와 b 중에 큰 값을 반환
                     }
                 }
             }
+            return bestScore;
         }
         else
         {
+            var bestScore = float.MaxValue;
             for (var row = 0; row < board.GetLength(0); row++)
             {
                 for (var col = 0; col < board.GetLength(1); col++)
@@ -55,14 +82,14 @@ public static class MinimaxAIController
                     if (board[row, col] == GameManager.PlayerType.None)
                     {
                         board[row, col] = GameManager.PlayerType.PlayerA;
-                        DoMinimax(board, depth + 1, true); // 재귀함수
+                        var score = DoMinimax(board, depth + 1, true); // 재귀함수
                         board[row, col] = GameManager.PlayerType.None;
+                        bestScore = Math.Min(bestScore, score); // Math.Min(a, b) : a와 b 중에 작은 값을 반환
                     }
                 }
             }
+            return bestScore;
         }
-        
-        return 0; // 임시 코드
     }
     
     /// <summary>
