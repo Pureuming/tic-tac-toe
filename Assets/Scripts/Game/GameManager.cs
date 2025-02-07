@@ -143,14 +143,20 @@ public class GameManager : Singleton<GameManager>
                 // TODO: 계산된 row, col 값
 
                 var result = AIController.FindNextMove(_board);
-                
-                if (SetNewBoardValue(PlayerType.PlayerB, result.row, result.col))
+                if (result.HasValue)
                 {
-                    var gameResult = CheckGameResult();
-                    if (gameResult == GameResult.None)
-                        SetTurn(TurnType.PlayerA);
-                    else
-                        EndGame(gameResult);
+                    if (SetNewBoardValue(PlayerType.PlayerB, result.Value.row, result.Value.col))
+                    {
+                        var gameResult = CheckGameResult();
+                        if (gameResult == GameResult.None)
+                            SetTurn(TurnType.PlayerA);
+                        else
+                            EndGame(gameResult);
+                    }
+                }
+                else
+                {
+                    EndGame(GameResult.Win);
                 }
                 
                 break;

@@ -2,9 +2,52 @@
 {
     private static GameManager.PlayerType[,] _board;
     
-    public static (int row, int col) FindNextMove(GameManager.PlayerType[,] board)
+    public static (int row, int col)? FindNextMove(GameManager.PlayerType[,] board)
     {
-        // TODO: board의 내용을 보고 다음 수를 계산 후 반환
+        var result1 = FindTwoMarker(board);
+        // HasValue : 값이 있는지 체크
+        if (result1.HasValue) return result1.Value;
+        var result2 = FindEmptyPosition(board, GameManager.PlayerType.PlayerA);
+        if (result2.HasValue) return result2.Value;
+        var result3 = FindEmptyPosition(board, GameManager.PlayerType.PlayerB);
+        if (result3.HasValue) return result3.Value;
+        var result4 = FindEmptyPosition(board, GameManager.PlayerType.None);
+        if (result4.HasValue) return result4.Value;
+        return null;
+    }
+
+    // 빈 칸을 찾은 뒤, 이미 있는 마커 근처를 반환하도록 
+    private static (int row, int col)? FindEmptyPosition(GameManager.PlayerType[,] board,
+        GameManager.PlayerType playerType)
+    {
+        for (var row = 0; row < board.GetLength(0); row++)
+        {
+            for (var col = 0; col < board.GetLength(1); col++)
+            {
+                if (board[row, col] == GameManager.PlayerType.None)
+                {
+                    if (playerType == GameManager.PlayerType.None) return (row, col);
+                    
+                    for (var i = -1; i <= 1; i++)
+                    {
+                        for (var j = -1; j <= 1; j++)
+                        {
+                            if (i == 0 && j == 0) continue;
+                            if (row + i < 0 || row + i >= board.GetLength(0) ||
+                                col + j < 0 || col + j >= board.GetLength(1)) continue;
+                            if (board[row + i, col + j] == playerType) return (row, col);
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // (int row, int col)'?' --> Nullable : null을 할당 할 수 없는 타입도 null로 할당 할 수 있도록, 사용법 : 변수 타입 뒤에 '?' 붙이기
+    private static (int row, int col)? FindTwoMarker(GameManager.PlayerType[,] board)
+    {
         // 1. 중앙이 비었으면 무조건 중앙을 체크
         if (board[1, 1] == GameManager.PlayerType.None) { return (1, 1); }
         
@@ -80,6 +123,6 @@
             }
         }
         
-        return (0, 0);
+        return null; // 이것을 위해 Nullable 사용
     }
 }
