@@ -20,9 +20,11 @@ public class GameManager : Singleton<GameManager>
     private enum GameResult { None, Win, Lose, Draw }
     
     public enum GameType { SinglePlayer, DualPlayer }
+    private GameType _gameType;
 
     public void ChangeToGameScene(GameType gameType)
     {
+        _gameType = gameType;
         SceneManager.LoadScene("Game");
     }
 
@@ -139,25 +141,40 @@ public class GameManager : Singleton<GameManager>
                 break;
             case TurnType.PlayerB:
                 _gameUIController.SetGameUIMode(GameUIController.GameUIMode.TurnB);
-                
-                //var result = AIController.FindNextMove(_board);
-                var result = MinimaxAIController.GetBestMove(_board);
-                if (result.HasValue)
+
+                if (_gameType == GameType.SinglePlayer)
                 {
-                    if (SetNewBoardValue(PlayerType.PlayerB, result.Value.row, result.Value.col))
+                    var result = MinimaxAIController.GetBestMove(_board);
+                    if (result.HasValue)
                     {
-                        var gameResult = CheckGameResult();
-                        if (gameResult == GameResult.None)
-                            SetTurn(TurnType.PlayerA);
-                        else
-                            EndGame(gameResult);
+                        if (SetNewBoardValue(PlayerType.PlayerB, result.Value.row, result.Value.col))
+                        {
+                            var gameResult = CheckGameResult();
+                            if (gameResult == GameResult.None)
+                                SetTurn(TurnType.PlayerA);
+                            else
+                                EndGame(gameResult);
+                        }
+                    }
+                    else
+                    {
+                        EndGame(GameResult.Win);
                     }
                 }
-                else
+                else if (_gameType == GameType.DualPlayer)
                 {
-                    EndGame(GameResult.Win);
+                    _blockController.OnBlockClickedDelegate = (row, col) =>
+                    {
+                        if (SetNewBoardValue(PlayerType.PlayerB, row, col))
+                        {
+                            var gameResult = CheckGameResult();
+                            if (gameResult == GameResult.None)
+                                SetTurn(TurnType.PlayerA);
+                            else
+                                EndGame(gameResult);
+                        }
+                    };    
                 }
-                
                 break;
         }
     }
