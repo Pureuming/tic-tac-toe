@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Block : MonoBehaviour
 {
@@ -65,6 +66,10 @@ public class Block : MonoBehaviour
 
     private void OnMouseUpAsButton()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
         _onBlockClicked?.Invoke(_blockIndex);
     }
 }
