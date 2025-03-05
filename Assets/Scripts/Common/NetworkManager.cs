@@ -76,6 +76,31 @@ public class NetworkManager : Singleton<NetworkManager>
             }
             else
             {
+                // 점수 불러오기 기능을 구현하기 위해 cookie 값 저장 (수강생님 코드 참고)
+                var cookie = www.GetResponseHeader("set-cookie");
+                if (!string.IsNullOrEmpty(cookie))
+                {
+                    //int lastIndex = cookie.LastIndexOf(";");
+                    //string sid = cookie.Substring(0, lastIndex);
+                    //PlayerPrefs.SetString("sid", sid);
+                    
+                    int lastIndex = cookie.IndexOf('='); // 첫 번째 '='의 위치 찾기
+                    if (lastIndex != -1 && lastIndex + 1 < cookie.Length) // '='이 존재하고, 뒤에 값이 있을 경우
+                    {
+                        string sid = cookie.Substring(lastIndex + 1).Split(';')[0]; // '=' 다음부터 ';' 이전까지 추출
+                        Debug.Log("Session ID : " + sid);
+                        PlayerPrefs.SetString("sid", sid);
+                    }
+                    else
+                    {
+                        // 올바른 쿠키 형식이 아님
+                    }
+                }
+                else
+                {
+                    Debug.Log("쿠키가 비어있습니다.");
+                }
+                
                 var resultString = www.downloadHandler.text;
                 var result = JsonUtility.FromJson<SigninResult>(resultString);
 
@@ -103,6 +128,43 @@ public class NetworkManager : Singleton<NetworkManager>
                         success?.Invoke();
                     });
                 }
+            }
+        }
+    }
+
+    public IEnumerator GetScore(Action<ScoreResult> success, Action failure)
+    {
+        using (UnityWebRequest www = 
+               new UnityWebRequest(Constants.ServerURL + "/users/score", UnityWebRequest.kHttpVerbGET))
+        {
+            www.downloadHandler = new DownloadHandlerBuffer();
+            
+            string sid = PlayerPrefs.GetString("sid", "");
+            if (!string.IsNullOrEmpty(sid))
+            {
+                www.SetRequestHeader("Cookie", sid);
+            }
+            
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError || 
+                www.result == UnityWebRequest.Result.ProtocolError)
+            {
+                if (www.responseCode == 403)
+                {
+                    Debug.Log("로그인이 필요합니다.");
+                }
+                
+                failure?.Invoke();
+            }
+            else
+            {
+                var result = www.downloadHandler.text;
+                var userScore = JsonUtility.FromJson<ScoreResult>(result);
+                
+                Debug.Log(userScore.score);
+                
+                success?.Invoke(userScore);
             }
         }
     }
