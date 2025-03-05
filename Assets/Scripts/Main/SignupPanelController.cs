@@ -18,8 +18,6 @@ public class SignupPanelController : MonoBehaviour
     [SerializeField] private TMP_InputField passwordInputField;
     [SerializeField] private TMP_InputField confirmPasswordInputField;
     
-    private const string ServerURL = "http://localhost:3000";
-    
     public void OnClickConfirmButton()
     {
         var username = usernameInputField.text;
@@ -53,7 +51,7 @@ public class SignupPanelController : MonoBehaviour
 
         // () 안의 객체가 {}를 벗어나면 Disposing되는 문법
         using (UnityWebRequest www =
-               new UnityWebRequest(ServerURL + "/users/signup", UnityWebRequest.kHttpVerbPOST))
+               new UnityWebRequest(Constants.ServerURL + "/users/signup", UnityWebRequest.kHttpVerbPOST))
         {
             www.uploadHandler = new UploadHandlerRaw(bodyRaw);
             www.downloadHandler = new DownloadHandlerBuffer();
