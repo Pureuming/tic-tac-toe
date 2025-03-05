@@ -28,7 +28,11 @@ public class SignupPanelController : MonoBehaviour
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(nickname) || 
             string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword)) 
         {
-            // TODO: 입력값이 비어있음을 알리는 팝업창 표시
+            // 입력값이 비어있음을 알리는 팝업창 표시
+            GameManager.Instance.OpenConfirmPanel("입력 내용이 누락되었습니다.", () =>
+            {
+                
+            });
             return;
         }
 
@@ -40,54 +44,24 @@ public class SignupPanelController : MonoBehaviour
             signupData.password = password;
             
             // 서버로 SignupData 전달하면서 회원가입 진행
-            StartCoroutine(Signup(signupData));
+            StartCoroutine(NetworkManager.Instance.Signup(signupData, () =>
+            {
+                Destroy(gameObject);
+            }, () =>
+            {
+                usernameInputField.text = "";
+                nicknameInputField.text = "";
+                passwordInputField.text = "";
+                confirmPasswordInputField.text = "";
+            }));
         }
-    }
-
-    IEnumerator Signup(SignupData signupData)
-    {
-        string jsonString = JsonUtility.ToJson(signupData);
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
-
-        // () 안의 객체가 {}를 벗어나면 Disposing되는 문법
-        using (UnityWebRequest www =
-               new UnityWebRequest(Constants.ServerURL + "/users/signup", UnityWebRequest.kHttpVerbPOST))
+        else
         {
-            www.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-            
-            yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.ConnectionError || 
-                www.result == UnityWebRequest.Result.ProtocolError)
+            GameManager.Instance.OpenConfirmPanel("비밀번호가 서로 다릅니다.", () =>
             {
-                Debug.Log("Error : " + www.error);
-
-                if (www.responseCode == 409) // 중복 사용자
-                {
-                    // TODO: 중복 사용자 생성 팝업 표시
-                    Debug.Log("중복 사용자");
-                    GameManager.Instance.OpenConfirmPanel("이미 존재하는 사용자입니다.", () =>
-                    {
-                        usernameInputField.text = "";
-                        nicknameInputField.text = "";
-                        passwordInputField.text = "";
-                        confirmPasswordInputField.text = "";
-                    });
-                }
-            }
-            else
-            {
-                var result = www.downloadHandler.text;
-                Debug.Log("Result : " + result);
-                
-                // 회원가입 성공 팝업 표시
-                GameManager.Instance.OpenConfirmPanel("회원가입이 완료 되었습니다.", () =>
-                {
-                    Destroy(gameObject);
-                });
-            }
+                passwordInputField.text = "";
+                confirmPasswordInputField.text = "";
+            });
         }
     }
     
