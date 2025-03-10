@@ -12,4 +12,5 @@
     };
     
     public enum PlayerType { None, PlayerA, PlayerB }
+    public enum GameType { SinglePlayer, DualPlayer, MultiPlayer }
 }

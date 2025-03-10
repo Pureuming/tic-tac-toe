@@ -14,10 +14,7 @@ public class GameManager : Singleton<GameManager>
     private GameUIController _gameUIController;
     private Canvas _canvas;
     
-    public enum TurnType { PlayerA, PlayerB }
-    
-    public enum GameType { SinglePlayer, DualPlayer, MultiPlayer }
-    private GameType _gameType;
+    private Constants.GameType _gameType;
 
     private void Start()
     {
@@ -25,7 +22,7 @@ public class GameManager : Singleton<GameManager>
         //OpenSigninPanel();
     }
 
-    public void ChangeToGameScene(GameType gameType)
+    public void ChangeToGameScene(Constants.GameType gameType)
     {
         _gameType = gameType;
         SceneManager.LoadScene("Game");
@@ -84,11 +81,14 @@ public class GameManager : Singleton<GameManager>
             var blockController = GameObject.FindObjectOfType<BlockController>();
             _gameUIController = GameObject.FindObjectOfType<GameUIController>();
             
+            // BlockController 초기화
+            blockController.InitBlocks();
+            
             // Game UI 초기화
             _gameUIController.SetGameUIMode(GameUIController.GameUIMode.Init);
             
             // Game Logic 객체 생성 --> 생성자 호출 
-            var gameLogic = new GameLogic(blockController);
+            var gameLogic = new GameLogic(blockController, _gameType);
         }
 
         // Canvas는 Main과 Game 모두 필요하기 때문에 if 밖에서 찾음

@@ -1,16 +1,168 @@
+// public interface IPlayerState
+// {
+//     void OnEnter(GameLogic gameLogic);
+//     void OnExit(GameLogic gameLogic);
+//     void HandleMove(GameLogic gameLogic, int row, int col);
+// }
+
+public abstract class BasePlayerState
+{
+    public abstract void OnEnter(GameLogic gameLogic);  // 해당 State가 할당될 때 처리
+    public abstract void OnExit(GameLogic gameLogic);   // 해당 State가 교체될 때 처리
+    public abstract void HandleMove(GameLogic gameLogic, int row, int col); // 해당 State의 행위에 따라 마커 표시
+    protected abstract void HandleNextTurn(GameLogic gameLogic);    // State 전환
+
+    // 마커 표시 및 결과 처리
+    protected void ProcessMove(GameLogic gameLogic, Constants.PlayerType playerType, int row, int col)
+    {
+        if (gameLogic.SetNewBoardValue(playerType, row, col))
+        {
+            var gameResult = gameLogic.CheckGameResult();
+
+            if (gameResult == GameLogic.GameResult.None)
+            {
+                HandleNextTurn(gameLogic);
+            }
+            else
+            {
+                gameLogic.EndGame(gameResult);
+            }
+        }
+    }
+}
+
+// 직접 플레이 (싱글, 네트워크)
+public class PlayerState : BasePlayerState
+{
+    private Constants.PlayerType _playerType;
+    private bool _isFirstPlayer;
+    
+    public PlayerState(bool isFirstPlayer)
+    {
+        _isFirstPlayer = isFirstPlayer;
+        _playerType =  _isFirstPlayer ? Constants.PlayerType.PlayerA : Constants.PlayerType.PlayerB;    
+    }
+    
+    public override void OnEnter(GameLogic gameLogic)
+    {
+        gameLogic.blockController.OnBlockClickedDelegate = (row, col) =>
+        {
+            HandleMove(gameLogic, row, col);
+        };
+    }
+
+    public override void OnExit(GameLogic gameLogic)
+    {
+        gameLogic.blockController.OnBlockClickedDelegate = null;
+    }
+
+    public override void HandleMove(GameLogic gameLogic, int row, int col)
+    {
+        ProcessMove(gameLogic, _playerType, row, col);
+    }
+
+    protected override void HandleNextTurn(GameLogic gameLogic)
+    {
+        if (_isFirstPlayer)
+        {
+            gameLogic.SetState(gameLogic.secondPlayerState);
+        }
+        else
+        {
+            gameLogic.SetState(gameLogic.firstPlayerState);
+        }
+    }
+}
+
+// AI 플레이
+public class AIState : BasePlayerState
+{
+    public override void OnEnter(GameLogic gameLogic)
+    {
+        
+    }
+
+    public override void OnExit(GameLogic gameLogic)
+    {
+        
+    }
+
+    public override void HandleMove(GameLogic gameLogic, int row, int col)
+    {
+        
+    }
+
+    protected override void HandleNextTurn(GameLogic gameLogic)
+    {
+        
+    }
+}
+
+// 네트워크 플레이
+public class NetworkState : BasePlayerState
+{
+    public override void OnEnter(GameLogic gameLogic)
+    {
+        
+    }
+
+    public override void OnExit(GameLogic gameLogic)
+    {
+        
+    }
+
+    public override void HandleMove(GameLogic gameLogic, int row, int col)
+    {
+        
+    }
+
+    protected override void HandleNextTurn(GameLogic gameLogic)
+    {
+        
+    }
+}
+
 public class GameLogic
 {
-    private BlockController _blockController;
+    public BlockController blockController;
     private Constants.PlayerType[,] _board;
     
-    private enum GameResult { None, Win, Lose, Draw }
+    public BasePlayerState firstPlayerState;      // 첫 번째 턴 상태 객체
+    public BasePlayerState secondPlayerState;     // 두 번째 턴 상태 객체
+    private BasePlayerState _currentPlayerState;    // 현재 턴 상태 객체
     
-    public GameLogic(BlockController blockController)
+    public enum GameResult { None, Win, Lose, Draw }
+    
+    public GameLogic(BlockController blockController, Constants.GameType gameType)
     {
-        _blockController = blockController;
+        this.blockController = blockController;
         
         // _board 초기화
         _board = new Constants.PlayerType[3, 3];
+
+        switch (gameType)
+        {
+            case Constants.GameType.SinglePlayer:
+                firstPlayerState = new PlayerState(true);
+                secondPlayerState = new AIState();
+                break;
+            case Constants.GameType.DualPlayer:
+                firstPlayerState = new PlayerState(true);
+                secondPlayerState = new PlayerState(false);
+                break;
+            case Constants.GameType.MultiPlayer:
+                break;
+        }
+        
+        // 게임 시작
+        SetState(firstPlayerState);
+    }
+
+    public void SetState(BasePlayerState state)
+    {
+        _currentPlayerState?.OnExit(this);
+        _currentPlayerState = state;
+        _currentPlayerState.OnEnter(this);
     }
     
     /// <summary>
@@ -20,20 +172,20 @@ public class GameLogic
     /// <param name="row">Row</param>
     /// <param name="col">Col</param>
     /// <returns>False : 할당할 수 없음, True : 할당이 완료됨</returns>
-    private bool SetNewBoardValue(Constants.PlayerType playerType, int row, int col)
+    public bool SetNewBoardValue(Constants.PlayerType playerType, int row, int col)
     {
         if (_board[row, col] != Constants.PlayerType.None) return false; // 중복 체크 방지
         
         if (playerType == Constants.PlayerType.PlayerA)
         {
             _board[row, col] = playerType;
-            _blockController.PlaceMarker(Block.MarkerType.O, row, col);
+            blockController.PlaceMarker(Block.MarkerType.O, row, col);
             return true;
         }
         else if (playerType == Constants.PlayerType.PlayerB)
         {
             _board[row, col] = playerType;
-            _blockController.PlaceMarker(Block.MarkerType.X, row, col);
+            blockController.PlaceMarker(Block.MarkerType.X, row, col);
             return true;
         }
         return false;
@@ -43,7 +195,7 @@ public class GameLogic
     /// 게임 결과 확인 함수
     /// </summary>
     /// <returns>플레이어 기준 게임 결과</returns>
-    private GameResult CheckGameResult()
+    public GameResult CheckGameResult()
     {
         if (CheckGameWin(Constants.PlayerType.PlayerA)) return GameResult.Win;
         if (CheckGameWin(Constants.PlayerType.PlayerB)) return GameResult.Lose;
@@ -61,7 +213,7 @@ public class GameLogic
             if (_board[row, 0] == playerType && _board[row, 1] == playerType && _board[row, 2] == playerType)
             {
                 (int, int)[] blocks = { (row, 0), (row, 1), (row, 2) };
-                _blockController.SetBlockColor(playerType, blocks);
+                blockController.SetBlockColor(playerType, blocks);
                 return true;
             }
         }
@@ -72,7 +224,7 @@ public class GameLogic
             if (_board[0, col] == playerType && _board[1, col] == playerType && _board[2, col] == playerType)
             {
                 (int, int)[] blocks = { (0, col), (1, col), (2, col) };
-                _blockController.SetBlockColor(playerType, blocks);
+                blockController.SetBlockColor(playerType, blocks);
                 return true;
             }
         }
@@ -81,14 +233,14 @@ public class GameLogic
         if (_board[0, 0] == playerType && _board[1, 1] == playerType && _board[2, 2] == playerType)
         {
             (int, int)[] blocks = { (0, 0), (1, 1), (2, 2) };
-            _blockController.SetBlockColor(playerType, blocks);
+            blockController.SetBlockColor(playerType, blocks);
             return true;
         }
 
         if (_board[0, 2] == playerType && _board[1, 1] == playerType && _board[2, 0] == playerType)
         {
             (int, int)[] blocks = { (0, 2), (1, 1), (2, 0) };
-            _blockController.SetBlockColor(playerType, blocks);
+            blockController.SetBlockColor(playerType, blocks);
             return true;
         }
         
@@ -100,7 +252,7 @@ public class GameLogic
     /// gameResult에 따라 결과 출력
     /// </summary>
     /// <param name="gameResult">win, lose, draw</param>
-    private void EndGame(GameResult gameResult)
+    public void EndGame(GameResult gameResult)
     {
         // // 게임오버 표시
         // _gameUIController.SetGameUIMode(GameUIController.GameUIMode.GameOver);
