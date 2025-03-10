@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
     private Canvas _canvas;
     
     private Constants.GameType _gameType;
+    private GameLogic _gameLogic;
 
     private void Start()
     {
@@ -30,6 +31,8 @@ public class GameManager : Singleton<GameManager>
 
     public void ChangeToMainScene()
     {
+        _gameLogic?.Dispose();
+        _gameLogic = null;
         SceneManager.LoadScene("Main");
     }
 
@@ -87,11 +90,18 @@ public class GameManager : Singleton<GameManager>
             // Game UI 초기화
             _gameUIController.SetGameUIMode(GameUIController.GameUIMode.Init);
             
-            // Game Logic 객체 생성 --> 생성자 호출 
-            var gameLogic = new GameLogic(blockController, _gameType);
+            // Game Logic 객체 생성 --> 생성자 호출
+            if (_gameLogic != null) _gameLogic.Dispose();
+            _gameLogic = new GameLogic(blockController, _gameType);
         }
 
         // Canvas는 Main과 Game 모두 필요하기 때문에 if 밖에서 찾음
         _canvas = GameObject.FindObjectOfType<Canvas>();
+    }
+
+    private void OnApplicationQuit()
+    {
+        _gameLogic?.Dispose();
+        _gameLogic = null;
     }
 }
