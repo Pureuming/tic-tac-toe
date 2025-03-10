@@ -53,7 +53,7 @@ public class PlayerState : BasePlayerState
 
     public override void OnExit(GameLogic gameLogic)
     {
-        gameLogic.blockController.OnBlockClickedDelegate = null;
+        gameLogic.blockController.OnBlockClickedDelegate = null; // 게임이 끝났을 때 board를 Click해도 바뀌지 않도록
     }
 
     public override void HandleMove(GameLogic gameLogic, int row, int col)
@@ -79,7 +79,16 @@ public class AIState : BasePlayerState
 {
     public override void OnEnter(GameLogic gameLogic)
     {
-        
+        // AI 연산
+        var result = MinimaxAIController.GetBestMove(gameLogic.GetBoard());
+        if (result.HasValue)
+        {
+            HandleMove(gameLogic, result.Value.row, result.Value.col);
+        }
+        else
+        {
+            gameLogic.EndGame(GameLogic.GameResult.Draw);
+        }
     }
 
     public override void OnExit(GameLogic gameLogic)
@@ -89,12 +98,12 @@ public class AIState : BasePlayerState
 
     public override void HandleMove(GameLogic gameLogic, int row, int col)
     {
-        
+        ProcessMove(gameLogic, Constants.PlayerType.PlayerB, row, col);
     }
 
     protected override void HandleNextTurn(GameLogic gameLogic)
     {
-        
+        gameLogic.SetState(gameLogic.firstPlayerState);
     }
 }
 
@@ -162,7 +171,7 @@ public class GameLogic
     {
         _currentPlayerState?.OnExit(this);
         _currentPlayerState = state;
-        _currentPlayerState.OnEnter(this);
+        _currentPlayerState?.OnEnter(this);
     }
     
     /// <summary>
@@ -254,8 +263,17 @@ public class GameLogic
     /// <param name="gameResult">win, lose, draw</param>
     public void EndGame(GameResult gameResult)
     {
-        // // 게임오버 표시
-        // _gameUIController.SetGameUIMode(GameUIController.GameUIMode.GameOver);
-        // _blockController.OnBlockClickedDelegate = null; // 게임이 끝났을 때 board를 Click해도 바뀌지 않도록
+        SetState(null);
+
+        firstPlayerState = null;
+        secondPlayerState = null;
+        
+        // 게임 오버 표시
+        GameManager.Instance.OpenGameOverPanel();
+    }
+    
+    public Constants.PlayerType[,] GetBoard()
+    {
+        return _board;
     }
 }

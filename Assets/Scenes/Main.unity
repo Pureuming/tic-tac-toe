@@ -559,7 +559,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6716932501826064731}
         m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
-        m_MethodName: OnClickScoreButton
+        m_MethodName: OnClickMultiplayButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
