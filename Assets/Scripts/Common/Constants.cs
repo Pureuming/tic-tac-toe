@@ -10,4 +10,6 @@
         StartGame,
         EndGame
     };
+    
+    public enum PlayerType { None, PlayerA, PlayerB }
 }

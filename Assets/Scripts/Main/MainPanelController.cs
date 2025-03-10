@@ -14,20 +14,25 @@ public class MainPanelController : MonoBehaviour
     {
         GameManager.Instance.ChangeToGameScene(GameManager.GameType.DualPlayer);
     }
+
+    public void OnClickMultiplayButton()
+    {
+        GameManager.Instance.ChangeToGameScene(GameManager.GameType.MultiPlayer);
+    }
     
     public void OnClickSettingsButton()
     {
         GameManager.Instance.OpenSettingsPanel();
     }
 
-    public void OnClickScoreButton()
-    {
-        StartCoroutine(NetworkManager.Instance.GetScore((userInfo) =>
-        {
-            Debug.Log(userInfo);
-        }, () =>
-        {
-            // 로그인 화면 띄우기
-        }));
-    }
+    // public void OnClickScoreButton()
+    // {
+    //     StartCoroutine(NetworkManager.Instance.GetScore((userInfo) =>
+    //     {
+    //         Debug.Log(userInfo);
+    //     }, () =>
+    //     {
+    //         // 로그인 화면 띄우기
+    //     }));
+    // }
 }
