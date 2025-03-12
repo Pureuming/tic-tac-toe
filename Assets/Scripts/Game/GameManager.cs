@@ -20,7 +20,15 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         // 로그인
-        //OpenSigninPanel();
+        StartCoroutine(NetworkManager.Instance.GetScore((userInfo) =>
+        {
+            Debug.Log("자동 로그인 성공" + "\n아이디 : " + userInfo.username + "\n로그인 닉네임 : " + userInfo.nickname);
+            OpenConfirmPanel(userInfo.nickname + "님 로그인에 성공하였습니다.", () => { });
+        }, () =>
+        {
+            Debug.Log("자동 로그인 실패");
+            OpenSigninPanel();
+        }));
     }
 
     public void ChangeToGameScene(Constants.GameType gameType)
