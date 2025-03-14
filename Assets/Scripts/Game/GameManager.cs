@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
+    [SerializeField] private GameObject leaderboardPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject signinPanel;
@@ -42,6 +43,28 @@ public class GameManager : Singleton<GameManager>
         _gameLogic?.Dispose();
         _gameLogic = null;
         SceneManager.LoadScene("Main");
+    }
+
+    public void OpenLeaderboardPanel()
+    {
+        if (_canvas != null)
+        {
+            var leaderboardPanelObject = Instantiate(leaderboardPanel, _canvas.transform);
+
+            StartCoroutine(NetworkManager.Instance.GetLeaderboard(ranks =>
+            {
+                foreach (var rank in ranks.scores)
+                {
+                    var leaderboardController = leaderboardPanelObject.GetComponent<LeaderboardPanelController>();
+                    leaderboardController.CreateScoreCell(rank);
+                }
+            }, () =>
+            {
+                Debug.Log("랭킹 가져오기 실패");
+            }));
+            
+            leaderboardPanelObject.GetComponent<PanelController>().Show();
+        }
     }
 
     public void OpenSettingsPanel()

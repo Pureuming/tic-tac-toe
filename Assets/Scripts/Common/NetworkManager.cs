@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
@@ -23,7 +24,7 @@ public class NetworkManager : Singleton<NetworkManager>
             www.uploadHandler = new UploadHandlerRaw(bodyRaw);
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
-            
+
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError || 
@@ -66,7 +67,7 @@ public class NetworkManager : Singleton<NetworkManager>
             www.uploadHandler = new UploadHandlerRaw(bodyRaw);
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
-            
+
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError ||
@@ -144,7 +145,7 @@ public class NetworkManager : Singleton<NetworkManager>
             {
                 www.SetRequestHeader("Cookie", sid);
             }
-            
+
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError || 
@@ -181,7 +182,7 @@ public class NetworkManager : Singleton<NetworkManager>
             {
                 www.SetRequestHeader("Cookie", sid);
             }
-            
+
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError || 
@@ -197,7 +198,8 @@ public class NetworkManager : Singleton<NetworkManager>
             else
             {
                 var result = www.downloadHandler.text;
-                var scores = JsonUtility.FromJson<Scores>(result);
+                //var scores = JsonUtility.FromJson<Scores>(result);    // scores가 null로 나오는 문제 발생
+                var scores = JsonConvert.DeserializeObject<Scores>(result); // 해결 코드
                 
                 success?.Invoke(scores);
             }
