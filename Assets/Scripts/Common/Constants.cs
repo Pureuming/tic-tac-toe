@@ -1,7 +1,7 @@
 ﻿public class Constants
 {
-    public const string ServerURL = "http://localhost:3000";
-    public const string GameServerURL = "ws://localhost:3000";
+    public const string ServerURL = "http://optimistic-sande-mobics-961dffb4.koyeb.app/:3000";
+    public const string GameServerURL = "ws://optimistic-sande-mobics-961dffb4.koyeb.app/:3000";
 
     public enum MultiplayManagerState
     {
