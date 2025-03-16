@@ -21,6 +21,13 @@ public abstract class BasePlayerState
             }
             else
             {
+                switch (gameResult)
+                {
+                    case GameLogic.GameResult.Win:
+                        Debug.Log("GameResult : Win");
+                        CoroutineHelper.Instance.AddScore();
+                        break;
+                }
                 gameLogic.EndGame(gameResult);
             }
         }
